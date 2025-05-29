@@ -93,10 +93,13 @@ function EasyCalc() {
     setWaitingForOperand(false);
     setError(false);
     setInputSequence("");
+    setShowCalcSequence(true); // Always reset to show on clear
   };
 
   // Handles arithmetic operator
   const handleOperator = (op) => {
+    setShowCalcSequence(true); // Always show sequence when an operator is pressed
+
     if (pendingOperator && !waitingForOperand) {
       // Chained operation: evaluate previous first
       const result = safeEvaluate(operand, display, pendingOperator);
