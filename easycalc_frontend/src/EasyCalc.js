@@ -140,6 +140,7 @@ function EasyCalc() {
         setDisplay(result.err);
         setError(true);
         setInputSequence(seq => seq + " =");
+        setShowCalcSequence(false); // Hide calculation sequence after error
       } else {
         setDisplay(String(result.val));
         setInputSequence(seq =>
@@ -148,6 +149,7 @@ function EasyCalc() {
             : display + " ="
           )
         );
+        setShowCalcSequence(false); // Hide calculation sequence after showing answer
       }
       setOperand(null);
       setPendingOperator(null);
