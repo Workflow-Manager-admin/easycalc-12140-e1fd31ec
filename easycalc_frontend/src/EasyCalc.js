@@ -281,15 +281,17 @@ function EasyCalc() {
 
   return (
     <section style={styles.calculator} aria-label="EasyCalc Calculator">
-      {/* Combined display area with both calculation sequence and current output */}
+      {/* Display area: conditionally show calculation sequence or just output after "=" */}
       <div style={styles.displayContainer} data-testid="dual-display">
-        <div
-          style={styles.displayCalculation}
-          data-testid="sequence-display"
-          aria-label="Calculation Sequence"
-        >
-          {inputSequence}
-        </div>
+        {showCalcSequence && (
+          <div
+            style={styles.displayCalculation}
+            data-testid="sequence-display"
+            aria-label="Calculation Sequence"
+          >
+            {inputSequence}
+          </div>
+        )}
         <div
           style={styles.displayOutput}
           data-testid="display"
