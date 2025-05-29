@@ -189,9 +189,10 @@ function EasyCalc() {
       alignItems: "stretch",
       border: `1px solid ${colors.secondary}33`,
     },
+    // Display area for calculation/result (true calculator screen)
     display: {
-      background: colors.secondary,
-      color: error ? "#d32f2f" : colors.primary,
+      background: "#222222",
+      color: error ? "#d32f2f" : "#fff",
       fontSize: "2.2rem",
       fontFamily: "monospace",
       borderRadius: "10px",
@@ -200,10 +201,25 @@ function EasyCalc() {
       padding: "10px 14px",
       marginBottom: "18px",
       letterSpacing: "1px",
-      border: `1px solid ${colors.secondary}22`,
+      border: `1px solid #191919`,
       overflowX: "auto",
       transition: "color 0.13s",
       wordBreak: "break-all",
+      userSelect: "all"
+    },
+    // Sequence/secondary line (previous operations, above the result, shown dimmed)
+    sequence: {
+      background: "#191919",
+      color: "#aaaaaa",
+      fontSize: "1.05rem",
+      borderRadius: "7px",
+      minHeight: "22px",
+      textAlign: "right",
+      marginBottom: 0,
+      padding: "5px 14px 0 14px",
+      border: "none",
+      transition: "none",
+      letterSpacing: "1px",
       userSelect: "all"
     },
     buttonGrid: {
