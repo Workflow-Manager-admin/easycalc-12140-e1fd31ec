@@ -132,8 +132,15 @@ function EasyCalc() {
       if (result.err) {
         setDisplay(result.err);
         setError(true);
+        setInputSequence(seq => seq + " =");
       } else {
         setDisplay(String(result.val));
+        setInputSequence(seq =>
+          (operand !== null && pendingOperator
+            ? operand.toString() + " " + pendingOperator + " " + display + " ="
+            : display + " ="
+          )
+        );
       }
       setOperand(null);
       setPendingOperator(null);
