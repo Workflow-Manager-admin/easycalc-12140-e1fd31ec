@@ -60,8 +60,24 @@ function EasyCalc() {
       setDisplay(digit);
       setWaitingForOperand(false);
       setError(false);
+
+      // If starting a new operand after an operator, append operator + digit, else clear previous input (e.g., after equals)
+      setInputSequence(seq => {
+        // If just set waitingForOperand, inputSequence ends with an operator
+        if (pendingOperator && waitingForOperand && operand !== null && !error) {
+          // Already handled by operator logic previously
+          return (operand !== null ? operand : "") + (pendingOperator ? " " + pendingOperator + " " : "") + digit;
+        }
+        // Reset input sequence if after error or after equals
+        if (error || (!pendingOperator && operand === null)) {
+          return digit;
+        }
+        return seq + digit;
+      });
+
     } else {
       setDisplay(display.length < 12 ? display + digit : display);
+      setInputSequence(seq => seq.length < 32 ? seq + digit : seq);
     }
   };
 
@@ -85,12 +101,25 @@ function EasyCalc() {
         setError(true);
         setOperand(null);
         setPendingOperator(null);
+        setInputSequence(seq => seq + " " + op);
         return;
       }
       setOperand(result.val);
       setDisplay(String(result.val));
+      setInputSequence(seq => {
+        // Update sequence to show the result then operator
+        return String(result.val) + " " + op + " ";
+      });
     } else {
       setOperand(parseFloat(display));
+      setInputSequence(seq => {
+        // If just entered operator (avoid stacking operators)
+        if (/\s[+\-×÷]\s$/.test(seq)) {
+          return seq.slice(0, -3) + " " + op + " ";
+        }
+        // Append with space: "12 + "
+        return (seq || display) + " " + op + " ";
+      });
     }
     setPendingOperator(op);
     setWaitingForOperand(true);
