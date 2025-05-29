@@ -190,37 +190,45 @@ function EasyCalc() {
       border: `1px solid ${colors.secondary}33`,
     },
     // Display area for calculation/result (true calculator screen)
-    display: {
+    displayContainer: {
       background: "#222222",
-      color: error ? "#d32f2f" : "#fff",
-      fontSize: "2.2rem",
-      fontFamily: "monospace",
       borderRadius: "10px",
-      minHeight: "54px",
-      textAlign: "right",
-      padding: "10px 14px",
+      minHeight: "76px",
       marginBottom: "18px",
-      letterSpacing: "1px",
       border: `1px solid #191919`,
-      overflowX: "auto",
-      transition: "color 0.13s",
-      wordBreak: "break-all",
-      userSelect: "all"
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-end",
+      boxSizing: "border-box",
+      overflow: "hidden"
     },
-    // Sequence/secondary line (previous operations, above the result, shown dimmed)
-    sequence: {
-      background: "#191919",
-      color: "#aaaaaa",
-      fontSize: "1.05rem",
-      borderRadius: "7px",
-      minHeight: "22px",
+    displayCalculation: {
+      color: "#eeeeeecc",
+      fontSize: "1.04rem",
+      fontFamily: "monospace",
       textAlign: "right",
-      marginBottom: 0,
-      padding: "5px 14px 0 14px",
-      border: "none",
-      transition: "none",
+      padding: "12px 14px 1px 10px",
+      minHeight: "22px",
       letterSpacing: "1px",
-      userSelect: "all"
+      wordBreak: "break-all",
+      userSelect: "all",
+      borderRadius: "7px 7px 0 0",
+      background: "transparent",
+      opacity: error ? 0.50 : 0.80,
+      fontWeight: 400,
+    },
+    displayOutput: {
+      color: error ? "#d32f2f" : "#fff",
+      fontSize: "2.14rem",
+      fontWeight: 700,
+      fontFamily: "monospace",
+      textAlign: "right",
+      padding: "2px 14px 9px 10px",
+      minHeight: "38px",
+      letterSpacing: "1px",
+      wordBreak: "break-all",
+      userSelect: "all",
+      background: "transparent",
     },
     buttonGrid: {
       display: "grid",
@@ -264,16 +272,22 @@ function EasyCalc() {
 
   return (
     <section style={styles.calculator} aria-label="EasyCalc Calculator">
-      {/* Sequence/history display, gray and dimmed, above main display */}
-      <div
-        style={styles.sequence}
-        data-testid="sequence-display"
-      >
-        {inputSequence}
-      </div>
-      {/* Main calculator 'screen' display: black with white text, strong contrast */}
-      <div style={styles.display} data-testid="display" aria-live="polite">
-        {error ? display : display}
+      {/* Combined display area with both calculation sequence and current output */}
+      <div style={styles.displayContainer} data-testid="dual-display">
+        <div
+          style={styles.displayCalculation}
+          data-testid="sequence-display"
+          aria-label="Calculation Sequence"
+        >
+          {inputSequence}
+        </div>
+        <div
+          style={styles.displayOutput}
+          data-testid="display"
+          aria-live="polite"
+        >
+          {display}
+        </div>
       </div>
       <div style={styles.buttonGrid}>
         {buttons.map((btn, i) => (
