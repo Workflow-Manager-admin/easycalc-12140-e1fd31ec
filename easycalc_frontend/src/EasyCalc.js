@@ -12,6 +12,7 @@ function EasyCalc() {
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [error, setError] = useState(false);
   const [inputSequence, setInputSequence] = useState(""); // Tracks user input sequence for display
+  const [showCalcSequence, setShowCalcSequence] = useState(true); // Tracks if calculation sequence should be shown
 
   // Color scheme from requirements
   const colors = {
@@ -56,6 +57,9 @@ function EasyCalc() {
 
   // Handles digit input
   const handleDigit = (digit) => {
+    // Always show calculation sequence in input mode
+    setShowCalcSequence(true);
+
     if (waitingForOperand || display === "0" || error) {
       setDisplay(digit);
       setWaitingForOperand(false);
