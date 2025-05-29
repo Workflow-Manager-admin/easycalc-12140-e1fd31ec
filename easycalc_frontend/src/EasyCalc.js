@@ -6,11 +6,12 @@ import React, { useState } from "react";
  */
 function EasyCalc() {
   // Internal state
-  const [display, setDisplay] = useState("0");
+  const [display, setDisplay] = useState("0"); // for the current (right) operand
   const [pendingOperator, setPendingOperator] = useState(null);
-  const [operand, setOperand] = useState(null);
+  const [operand, setOperand] = useState(null); // left operand as number
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [error, setError] = useState(false);
+  const [inputSequence, setInputSequence] = useState(""); // Tracks user input sequence for display
 
   // Color scheme from requirements
   const colors = {
@@ -71,6 +72,7 @@ function EasyCalc() {
     setOperand(null);
     setWaitingForOperand(false);
     setError(false);
+    setInputSequence("");
   };
 
   // Handles arithmetic operator
