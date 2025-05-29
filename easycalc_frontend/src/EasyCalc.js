@@ -1,0 +1,235 @@
+import React, { useState } from "react";
+
+/**
+ * PUBLIC_INTERFACE
+ * EasyCalc - A compact, styled calculator component supporting +, -, ×, ÷, C, = and digit buttons.
+ */
+function EasyCalc() {
+  // Internal state
+  const [display, setDisplay] = useState("0");
+  const [pendingOperator, setPendingOperator] = useState(null);
+  const [operand, setOperand] = useState(null);
+  const [waitingForOperand, setWaitingForOperand] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Color scheme from requirements
+  const colors = {
+    primary: "#ffffff",
+    secondary: "#222222",
+    accent: "#007bff",
+  };
+
+  // Button grid
+  const buttons = [
+    { label: "7", type: "digit" }, { label: "8", type: "digit" }, { label: "9", type: "digit" }, { label: "÷", type: "operator" },
+    { label: "4", type: "digit" }, { label: "5", type: "digit" }, { label: "6", type: "digit" }, { label: "×", type: "operator" },
+    { label: "1", type: "digit" }, { label: "2", type: "digit" }, { label: "3", type: "digit" }, { label: "-", type: "operator" },
+    { label: "C", type: "clear" }, { label: "0", type: "digit" }, { label: "=", type: "equal" }, { label: "+", type: "operator" },
+  ];
+
+  // Utility functions
+  const isOperator = (ch) => ["+", "-", "×", "÷"].includes(ch);
+
+  // Main input handler
+  const handleButtonClick = (btn) => {
+    if (error && btn.type !== "clear") {
+      return; // Only allow 'C' after error
+    }
+    switch (btn.type) {
+      case "digit":
+        handleDigit(btn.label);
+        break;
+      case "operator":
+        handleOperator(btn.label);
+        break;
+      case "equal":
+        handleEqual();
+        break;
+      case "clear":
+        handleClear();
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Handles digit input
+  const handleDigit = (digit) => {
+    if (waitingForOperand || display === "0" || error) {
+      setDisplay(digit);
+      setWaitingForOperand(false);
+      setError(false);
+    } else {
+      setDisplay(display.length < 12 ? display + digit : display);
+    }
+  };
+
+  // Handles clear/reset
+  const handleClear = () => {
+    setDisplay("0");
+    setPendingOperator(null);
+    setOperand(null);
+    setWaitingForOperand(false);
+    setError(false);
+  };
+
+  // Handles arithmetic operator
+  const handleOperator = (op) => {
+    if (pendingOperator && !waitingForOperand) {
+      // Chained operation: evaluate previous first
+      const result = safeEvaluate(operand, display, pendingOperator);
+      if (result.err) {
+        setDisplay(result.err);
+        setError(true);
+        setOperand(null);
+        setPendingOperator(null);
+        return;
+      }
+      setOperand(result.val);
+      setDisplay(String(result.val));
+    } else {
+      setOperand(parseFloat(display));
+    }
+    setPendingOperator(op);
+    setWaitingForOperand(true);
+  };
+
+  // Handles equals (=)
+  const handleEqual = () => {
+    if (pendingOperator && operand !== null && !waitingForOperand) {
+      const result = safeEvaluate(operand, display, pendingOperator);
+      if (result.err) {
+        setDisplay(result.err);
+        setError(true);
+      } else {
+        setDisplay(String(result.val));
+      }
+      setOperand(null);
+      setPendingOperator(null);
+      setWaitingForOperand(true);
+    }
+  };
+
+  // PUBLIC_INTERFACE
+  // Safely evaluate the arithmetic
+  function safeEvaluate(left, rightStr, op) {
+    let right = parseFloat(rightStr);
+    switch (op) {
+      case "+":
+        return { val: round2(left + right) };
+      case "-":
+        return { val: round2(left - right) };
+      case "×":
+        return { val: round2(left * right) };
+      case "÷":
+        if (right === 0) {
+          return { err: "Error" };
+        }
+        return { val: round2(left / right) };
+      default:
+        return { val: right };
+    }
+  }
+
+  // Round to fit display
+  const round2 = (v) =>
+    Number.isFinite(v)
+      ? parseFloat(Number(v).toPrecision(10)).toString().slice(0, 12)
+      : "Error";
+
+  // Styling (inline for component-scoped, inspired by provided color scheme)
+  const styles = {
+    calculator: {
+      width: "min(100vw, 340px)",
+      margin: "48px auto",
+      background: colors.primary,
+      borderRadius: "14px",
+      boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
+      padding: 18,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "stretch",
+      border: `1px solid ${colors.secondary}33`,
+    },
+    display: {
+      background: colors.secondary,
+      color: error ? "#d32f2f" : colors.primary,
+      fontSize: "2.2rem",
+      fontFamily: "monospace",
+      borderRadius: "10px",
+      minHeight: "54px",
+      textAlign: "right",
+      padding: "10px 14px",
+      marginBottom: "18px",
+      letterSpacing: "1px",
+      border: `1px solid ${colors.secondary}22`,
+      overflowX: "auto",
+      transition: "color 0.13s",
+      wordBreak: "break-all",
+      userSelect: "all"
+    },
+    buttonGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: "12px"
+    },
+    button: {
+      border: "none",
+      borderRadius: "6px",
+      fontSize: "1.15rem",
+      fontWeight: 500,
+      padding: "16px 0",
+      cursor: "pointer",
+      background: colors.secondary,
+      color: colors.primary,
+      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      transition: "background 0.1s, color 0.1s"
+    },
+    buttonAccent: {
+      background: colors.accent,
+      color: "#fff"
+    },
+    buttonDanger: {
+      background: "#dc3545",
+      color: "#fff"
+    },
+    buttonEqual: {
+      background: "#16a34a",
+      color: "#fff"
+    }
+  };
+
+  // Button coloring by type/role
+  const getButtonStyle = (btn) => {
+    if (btn.type === "operator") return { ...styles.button, ...styles.buttonAccent };
+    if (btn.type === "clear") return { ...styles.button, ...styles.buttonDanger };
+    if (btn.type === "equal") return { ...styles.button, ...styles.buttonEqual };
+    // default
+    return styles.button;
+  };
+
+  return (
+    <section style={styles.calculator} aria-label="EasyCalc Calculator">
+      <div style={styles.display} data-testid="display" aria-live="polite">
+        {display}
+      </div>
+      <div style={styles.buttonGrid}>
+        {buttons.map((btn, i) => (
+          <button
+            key={btn.label}
+            style={getButtonStyle(btn)}
+            onClick={() => handleButtonClick(btn)}
+            aria-label={btn.label}
+            data-testid={"btn-" + btn.label}
+            disabled={error && btn.type !== "clear"}
+            tabIndex={0}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default EasyCalc;
