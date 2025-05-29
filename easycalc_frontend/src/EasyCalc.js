@@ -248,8 +248,12 @@ function EasyCalc() {
 
   return (
     <section style={styles.calculator} aria-label="EasyCalc Calculator">
+      <div style={{ ...styles.display, fontSize: "1.1rem", minHeight: "22px", color: "#aaa", textAlign: "right", marginBottom: 0, padding: "5px 14px 0 14px", background: "transparent", border: "none", transition: "none", letterSpacing: "1px", userSelect: "all" }} data-testid="sequence-display">
+        {/* Secondary line for sequence, dimmed */}
+        {inputSequence}
+      </div>
       <div style={styles.display} data-testid="display" aria-live="polite">
-        {display}
+        {error ? display : display}
       </div>
       <div style={styles.buttonGrid}>
         {buttons.map((btn, i) => (
